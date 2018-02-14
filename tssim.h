@@ -3,9 +3,46 @@ API for tssim: an experimenatl code to do research on
 time series similarity search and and its applications.
 */
 
+/**
+ * @brief Identifies the timeseries as a query or 
+ * stored.  
+ */
+enum TSType {STORED, QUERY};
+
+/**
+ * @brief Represents a single timeseries
+ * 
+ */
+typedef struct TSeries{
+    int nelem;
+    unsigned long int seed;
+    enum TSType type;
+    char* name;
+    int id;
+    // incase of query type
+    int pid;
+    double* ts;
+    double* (*create)(struct TSeries);
+    int (*destroy)(struct TSeries);
+    void* (*compress)(struct TSeries);
+} TSeries;
+
+/**
+ * @brief An umbrella context for timeseries 
+ * similarity experiment. we need to see if this
+ * makes sense. This is kind of config. for the 
+ * experiment. From clean api point of view this 
+ * can be reconsidered.  
+ */
+typedef struct TSSimContext {
+    int nts;
+    char* prefix;
+    TSeries* tss;
+    void* (*index)(struct TSSimContext);    
+} TSSimContext; 
 
 /* TODO: generate n time series signals and optionally save */
-void ts_gen();
+double* ts_gen(struct TSeries*);
 
 /* TODO: generate a similar time series as input and optionally save */
 void ts_gen_sim();

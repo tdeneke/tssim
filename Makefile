@@ -1,5 +1,6 @@
 CC=gcc
 CFLAGS=-I.
+LDFLAGS=-lgsl -lgslcblas -lm
 DEPS = tssim.h
 OBJ = tssimtest.o tssim.o 
 
@@ -7,7 +8,7 @@ OBJ = tssimtest.o tssim.o
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 tssimtest: $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS)
+	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
 .PHONY: clean
 

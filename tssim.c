@@ -1,11 +1,36 @@
 /* API implementation for tssim */
 #include <stdio.h>
+#include <stdlib.h>
 #include <tssim.h>
+#include <gsl/gsl_rng.h>
+#include <gsl/gsl_randist.h>
 
 /* TODO: generate n time series signals and optionally save */
-void ts_gen(){
+double* ts_gen(struct TSeries* ts){
   printf("inside ts_gen\n");
-  return;
+  printf("nts: %d, fname_prefix: %s\n", ts->nelem, ts->name);
+  double* elems = (double*)malloc((ts->nelem)*sizeof(double));
+  
+  // fill ts using random walk
+  const gsl_rng_type * T;
+  gsl_rng * r;
+  gsl_rng_env_setup();
+  T = gsl_rng_default;
+  // T = gsl_rng_mt19937_1998;
+  r = gsl_rng_alloc (T);
+  gsl_rng_set(r, ts->seed);
+  double sum = 0.0;
+  double rnd = 0.0;
+  for(int i=0; i<ts->nelem; i++){
+    rnd = gsl_ran_flat(r, -500.0, 500.0);
+    elems[i] = sum + rnd;
+    sum = elems[i];
+    printf("elem[%d]: %f and rand: %f\n", i, elems[i], rnd);
+  }
+  gsl_rng_free (r);
+  ts->ts = elems;
+  
+  return elems;
 }
 
 /* TODO: generate a similar time series as input and optionally save */
