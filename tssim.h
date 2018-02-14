@@ -9,6 +9,8 @@ time series similarity search and and its applications.
  */
 enum TSType {STORED, QUERY};
 
+typedef enum { false, true } bool;
+
 /**
  * @brief Represents a single timeseries
  * 
@@ -17,8 +19,9 @@ typedef struct TSeries{
     int nelem;
     unsigned long int seed;
     enum TSType type;
-    char* name;
+    char name[80];
     int id;
+    bool save;
     // incase of query type
     int pid;
     double* ts;

@@ -4,6 +4,7 @@
 #include <tssim.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
+#include <time.h>
 
 /* TODO: generate n time series signals and optionally save */
 double* ts_gen(struct TSeries* ts){
@@ -29,6 +30,13 @@ double* ts_gen(struct TSeries* ts){
   }
   gsl_rng_free (r);
   ts->ts = elems;
+
+  // save to disk if required
+  int res = sprintf (ts->name, "%u-%d", (unsigned long)time(NULL),ts->id);
+  FILE* pf = fopen(ts->name, "w");
+  if(ts->save == true){
+
+  }
   
   return elems;
 }

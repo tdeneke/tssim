@@ -8,6 +8,7 @@ int main() {
   ts->name = "ts";
   ts->nelem = 100;
   ts->seed = 101;
+  ts->save = true;
   
   /* TODO: generate n time series signals and optionally save */
   ts_gen(ts);
