@@ -5,7 +5,7 @@ DEPS = tssim.h
 OBJ = tssimtest.o tssim.o 
 
 %.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -g -c -o $@ $< $(CFLAGS)
 
 tssimtest: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)

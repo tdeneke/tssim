@@ -44,14 +44,50 @@ double* ts_gen(TSeries* ts){
     }
     fclose(pf);
   } 
+  
   return elems;
 }
 
 /* TODO: generate a similar time series as input and optionally save */
-double* ts_gen_sim(TSeries* its, TSeries* ots){
+double* ts_gen_sim(TSeries* ots, TSeries* its){
   printf("inside ts_gen_sim\n");
-    
-  return ots->ts;
+  ots->nelem = its->nelem;
+  strcat(ots->name, its->name);
+  double* elems = (double*)malloc((ots->nelem)*sizeof(double));
+  printf("inside ts_gen_sim after naming\n");
+
+  // fill output with input plus a small random noise
+  const gsl_rng_type * T;
+  gsl_rng * r;
+  gsl_rng_env_setup();
+  T = gsl_rng_default;
+  r = gsl_rng_alloc (T);
+  gsl_rng_set(r, ots->seed);
+  double rnd = 0.0;
+  for(int i=0; i<ots->nelem; i++){
+    rnd = 0.05 * gsl_ran_flat(r, -500.0, 500.0);
+    elems[i] = its->ts[i] + rnd;
+    printf("elem[%d]: %f and rand: %f\n", i, elems[i], rnd);
+  }
+  gsl_rng_free (r);
+  ots->ts = elems;
+
+  // save to disk if required
+  printf("inside ts_gen_sim before fname naming\n");
+  char fname[LEN_FNAME];
+  strcpy(fname, "./db/");
+  strcat(fname, ots->name);
+  strcat(fname, "-sim");  
+  printf("inside ts_gen_sim after fname naming\n");
+  FILE* pf = fopen(fname, "w");
+  if(ots->save == true && pf != NULL){
+    for(int i=0; i<ots->nelem; i++){
+    	fprintf(pf, "%f\n", ots->ts[i]);
+    }
+    fclose(pf);
+  }
+
+  return elems;
 }
 
 /* TODO: generate a lagged version of a time series and opt. save */

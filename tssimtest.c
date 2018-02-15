@@ -8,18 +8,19 @@ int main() {
   ts->nelem = 100;
   ts->seed = 101;
   ts->save = true;
-  
   /* TODO: generate n time series signals and optionally save */
   ts_gen(ts);
-
-  // TODO: move this to deinit func?
-  free(ts->ts);
-  free(ts);
 
   /* TODO: generate a similar time series as input and optionally save */
   // we plan to generate similar ts for every new ts 
   TSeries* tss = (TSeries*)malloc(sizeof(TSeries));
+  tss->seed = 101;
+  tss->save = true;
   ts_gen_sim(tss, ts);
+  // TODO: move this to deinit func?
+  free(ts->ts);
+  free(ts);
+  free(tss->ts);
   free(tss);
 
   /* TODO: generate a lagged version of a time series and opt. save */
