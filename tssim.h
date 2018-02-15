@@ -3,6 +3,9 @@ API for tssim: an experimenatl code to do research on
 time series similarity search and and its applications.
 */
 
+#define LEN_FNAME 128
+#define LEN_TSNAME 64
+
 /**
  * @brief Identifies the timeseries as a query or 
  * stored.  
@@ -19,7 +22,7 @@ typedef struct TSeries{
     int nelem;
     unsigned long int seed;
     enum TSType type;
-    char name[80];
+    char name[LEN_TSNAME];
     int id;
     bool save;
     // incase of query type
@@ -45,10 +48,10 @@ typedef struct TSSimContext {
 } TSSimContext; 
 
 /* TODO: generate n time series signals and optionally save */
-double* ts_gen(struct TSeries*);
+double* ts_gen(TSeries*);
 
 /* TODO: generate a similar time series as input and optionally save */
-void ts_gen_sim();
+double* ts_gen_sim(TSeries*, TSeries*);
 
 /* TODO: generate a lagged version of a time series and opt. save */
 void ts_gen_lag();   

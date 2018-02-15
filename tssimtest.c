@@ -5,7 +5,6 @@ int main() {
 
   // TODO: move this to an init func?
   TSeries* ts = (TSeries*)malloc(sizeof(TSeries));
-  ts->name = "ts";
   ts->nelem = 100;
   ts->seed = 101;
   ts->save = true;
@@ -18,7 +17,10 @@ int main() {
   free(ts);
 
   /* TODO: generate a similar time series as input and optionally save */
-  ts_gen_sim();
+  // we plan to generate similar ts for every new ts 
+  TSeries* tss = (TSeries*)malloc(sizeof(TSeries));
+  ts_gen_sim(tss, ts);
+  free(tss);
 
   /* TODO: generate a lagged version of a time series and opt. save */
   ts_gen_lag();   

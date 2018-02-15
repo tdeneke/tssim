@@ -1,14 +1,16 @@
 /* API implementation for tssim */
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <tssim.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 #include <time.h>
 
 /* TODO: generate n time series signals and optionally save */
-double* ts_gen(struct TSeries* ts){
+double* ts_gen(TSeries* ts){
   printf("inside ts_gen\n");
+  int res = sprintf (ts->name, "%lu-%d", (unsigned long)time(NULL),ts->id);
   printf("nts: %d, fname_prefix: %s\n", ts->nelem, ts->name);
   double* elems = (double*)malloc((ts->nelem)*sizeof(double));
   
@@ -32,19 +34,24 @@ double* ts_gen(struct TSeries* ts){
   ts->ts = elems;
 
   // save to disk if required
-  int res = sprintf (ts->name, "%u-%d", (unsigned long)time(NULL),ts->id);
-  FILE* pf = fopen(ts->name, "w");
-  if(ts->save == true){
-
-  }
-  
+  char fname[LEN_FNAME];
+  strcpy(fname, "./db/");
+  strcat(fname, ts->name);  
+  FILE* pf = fopen(fname, "w");
+  if(ts->save == true && pf != NULL){
+    for(int i=0; i<ts->nelem; i++){
+    	fprintf(pf, "%f\n", ts->ts[i]);
+    }
+    fclose(pf);
+  } 
   return elems;
 }
 
 /* TODO: generate a similar time series as input and optionally save */
-void ts_gen_sim(){
+double* ts_gen_sim(TSeries* its, TSeries* ots){
   printf("inside ts_gen_sim\n");
-  return;
+    
+  return ots->ts;
 }
 
 /* TODO: generate a lagged version of a time series and opt. save */
