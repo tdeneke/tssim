@@ -28,6 +28,7 @@ typedef struct TSeries{
     // incase of query type
     int pid;
     double* ts;
+    double* fs;
     double* (*create)(struct TSeries);
     int (*destroy)(struct TSeries);
     void* (*compress)(struct TSeries);
@@ -57,7 +58,7 @@ double* ts_gen_sim(TSeries*, TSeries*);
 void ts_gen_lag();   
 
 /* TODO: transform time series given a transform func like dft and optionally compress */
-void ts_tfr();
+void ts_tfr(TSeries* ts);
 
 /* TODO: index time series */
 void ts_index();

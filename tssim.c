@@ -5,6 +5,8 @@
 #include <tssim.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
+#include <gsl/gsl_fft_real.h>
+#include <gsl/gsl_fft_halfcomplex.h>
 #include <time.h>
 
 /* TODO: generate n time series signals and optionally save */
@@ -97,8 +99,39 @@ void ts_gen_lag(){
 }   
 
 /* TODO: transform time series given a transform func like dft and optionally compress */
-void ts_tfr(){
+void ts_tfr(TSeries* ts){
   printf("inside ts_tfr \n");
+  gsl_fft_real_wavetable * real;
+  gsl_fft_real_workspace * work;
+
+  work = gsl_fft_real_workspace_alloc (ts->nelem);
+  real = gsl_fft_real_wavetable_alloc (ts->nelem);
+
+  ts->fs = (double*)malloc((ts->nelem)*sizeof(double));
+  for(int i=0; i<ts->nelem; i++){
+    ts->fs[i] = ts->ts[i];
+  }
+  gsl_fft_real_transform (ts->fs, 1, ts->nelem, real, work);
+  gsl_fft_real_wavetable_free (real);
+
+  // just a test
+  /* gsl_fft_halfcomplex_wavetable * hc;
+  hc = gsl_fft_halfcomplex_wavetable_alloc (ts->nelem);
+
+  for(int i = 11; i < ts->nelem; i++){
+      ts->fs[i] = 0;
+  }
+  gsl_fft_halfcomplex_inverse (ts->fs, 1, ts->nelem, hc, work);
+  gsl_fft_halfcomplex_wavetable_free (hc);
+
+  FILE* pf = fopen("./db/idft.txt", "w");
+  for (int i = 0; i < ts->nelem; i++){
+      fprintf(pf, "%f\n", ts->fs[i]);
+  }
+  fclose(pf);
+  */
+  
+  gsl_fft_real_workspace_free (work);
   return;
 }
 

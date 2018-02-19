@@ -17,17 +17,12 @@ int main() {
   tss->seed = 101;
   tss->save = true;
   ts_gen_sim(tss, ts);
-  // TODO: move this to deinit func?
-  free(ts->ts);
-  free(ts);
-  free(tss->ts);
-  free(tss);
-
+  
   /* TODO: generate a lagged version of a time series and opt. save */
   ts_gen_lag();   
 
   /* TODO: transform time series given a transform func like dft and optionally compress */
-  ts_tfr();
+  ts_tfr(ts);
 
   /* TODO: index time series */
   ts_index();
@@ -40,7 +35,14 @@ int main() {
 
   /* TODO: build lag graph ?? */
   ts_lag_graph();
-  
+   
+  // TODO: move this to deinit func?
+  free(ts->ts);
+  free(ts);
+  free(tss->ts);
+  free(tss);
+
+ 
 
   return(0);
 }
