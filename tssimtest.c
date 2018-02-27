@@ -1,48 +1,65 @@
 #include <tssim.h>
 #include <stdlib.h>
+#include <time.h>
 
 int main() {
 
   // TODO: move this to an init func?
-  TSeries* ts = (TSeries*)malloc(sizeof(TSeries));
-  ts->nelem = 100;
-  ts->seed = 101;
-  ts->save = true;
-  /* TODO: generate n time series signals and optionally save */
-  ts_gen(ts);
+  TSSimContext* tsctx = (TSSimContext*)malloc(sizeof(TSSimContext));
+  tsctx->nts = 100;
+  tsctx->tss = (TSeries*)malloc((tsctx->nts)*sizeof(TSeries));
+
+  for (int i=0; i<tsctx->nts; i++){
+    (tsctx->tss[i]).nelem = 100;
+    (tsctx->tss[i]).seed = i;
+    (tsctx->tss[i]).id = i;
+    (tsctx->tss[i]).save = true;
+
+    //ts->save = true;
+    /* TODO: generate n time series signals and optionally save */
+    ts_gen(&tsctx->tss[i]);
+    ts_tfr(&tsctx->tss[i]);
+  }
 
   /* TODO: generate a similar time series as input and optionally save */
   // we plan to generate similar ts for every new ts 
-  TSeries* tss = (TSeries*)malloc(sizeof(TSeries));
-  tss->seed = 101;
-  tss->save = true;
-  ts_gen_sim(tss, ts);
-  
+  TSeries* tssim = (TSeries*)malloc(sizeof(TSeries));
+  tssim->seed = 101;
+  tssim->save = true;
+  srand(time(NULL));
+  tssim->id = rand()%tsctx->nts + 1;
+  ts_gen_sim(tssim, &tsctx->tss[tssim->id]);
+  ts_tfr(tssim);
+ 
   /* TODO: generate a lagged version of a time series and opt. save */
-  ts_gen_lag();   
+  // ts_gen_lag();   
 
   /* TODO: transform time series given a transform func like dft and optionally compress */
-  ts_tfr(ts);
+  // ts_tfr(ts);
 
   /* TODO: index time series */
-  ts_index();
+  IndexH idx = ts_index(tsctx);
 
   /* TODO: time series search given a search func e.g. knn */
-  ts_search();
+  ts_search(idx, tssim);
   
   /* TODO: time series lag corr. calc. */
-  ts_calc_lag();
+  // ts_calc_lag();
 
   /* TODO: build lag graph ?? */
-  ts_lag_graph();
+  // ts_lag_graph();
    
   // TODO: move this to deinit func?
-  free(ts->ts);
-  free(ts);
-  free(tss->ts);
-  free(tss);
-
- 
+  for(int i=0; i<tsctx->nts; i++){
+    free(tsctx->tss[i].ts);
+    free(tsctx->tss[i].fs);
+  }
+  free(tsctx->tss);
+  free(tsctx);
+  free(tssim->ts);
+  free(tssim->fs);
+  free(tssim);
+  Index_Destroy(idx);
 
   return(0);
 }

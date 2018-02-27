@@ -1,3 +1,5 @@
+#include <string.h>
+#include <spatialindex/capi/sidx_api.h>
 /*
 API for tssim: an experimenatl code to do research on 
 time series similarity search and and its applications.
@@ -5,6 +7,7 @@ time series similarity search and and its applications.
 
 #define LEN_FNAME 128
 #define LEN_TSNAME 64
+#define LEN_IDX_DIM 5
 
 /**
  * @brief Identifies the timeseries as a query or 
@@ -61,10 +64,10 @@ void ts_gen_lag();
 void ts_tfr(TSeries* ts);
 
 /* TODO: index time series */
-void ts_index();
+IndexH ts_index(TSSimContext*);
 
 /* TODO: time series search given a search func e.g. knn */
-void ts_search();
+void ts_search(IndexH, TSeries*);
   
 /* TODO: time series lag corr. calc. */
 void ts_calc_lag();
