@@ -58,7 +58,7 @@ double* ts_gen(TSeries*);
 double* ts_gen_sim(TSeries*, TSeries*);
 
 /* TODO: generate a lagged version of a time series and opt. save */
-void ts_gen_lag();   
+double* ts_gen_lag(TSeries*, TSeries*, int);   
 
 /* TODO: transform time series given a transform func like dft and optionally compress */
 void ts_tfr(TSeries* ts);

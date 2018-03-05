@@ -29,7 +29,13 @@ int main() {
   srand(time(NULL));
   tssim->id = rand()%tsctx->nts + 1;
   ts_gen_sim(tssim, &tsctx->tss[tssim->id]);
+
+  // generate a lagged version
+  TSeries* tslag = (TSeries*)malloc(sizeof(TSeries));
+  tslag->save = true;
+  ts_gen_lag(tslag, tssim, 5);
   ts_tfr(tssim);
+  ts_tfr(tslag);
  
   /* TODO: generate a lagged version of a time series and opt. save */
   // ts_gen_lag();   
@@ -42,6 +48,7 @@ int main() {
 
   /* TODO: time series search given a search func e.g. knn */
   ts_search(idx, tssim);
+  ts_search(idx, tslag);
   
   /* TODO: time series lag corr. calc. */
   // ts_calc_lag();
@@ -59,6 +66,9 @@ int main() {
   free(tssim->ts);
   free(tssim->fs);
   free(tssim);
+  free(tslag->ts);
+  free(tslag->fs);
+  free(tslag);
   Index_Destroy(idx);
 
   return(0);

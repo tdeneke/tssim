@@ -37,6 +37,7 @@ double* ts_gen(TSeries* ts){
   ts->ts = elems;
 
   // save to disk if required
+  // TODO: move this type of save blocks to own func.
   char fname[LEN_FNAME];
   strcpy(fname, "./db/");
   strcat(fname, ts->name);  
@@ -56,9 +57,7 @@ double* ts_gen_sim(TSeries* ots, TSeries* its){
   printf("inside ts_gen_sim\n");
   ots->nelem = its->nelem;
   strcpy(ots->name, its->name);
-  printf("infname: %s, outfname: %s", its->name, ots->name);
   double* elems = (double*)malloc((ots->nelem)*sizeof(double));
-  printf("inside ts_gen_sim after naming\n");
 
   // fill output with input plus a small random noise
   const gsl_rng_type * T;
@@ -77,12 +76,11 @@ double* ts_gen_sim(TSeries* ots, TSeries* its){
   ots->ts = elems;
 
   // save to disk if required
-  printf("inside ts_gen_sim before fname naming\n");
+  // TODO: move this type of save blocks to own func.
   char fname[LEN_FNAME];
   strcpy(fname, "./db/");
   strcat(fname, ots->name);
   strcat(fname, "-sim");  
-  printf("inside ts_gen_sim after fname naming\n");
   FILE* pf = fopen(fname, "w");
   if(ots->save == true && pf != NULL){
     for(int i=0; i<ots->nelem; i++){
@@ -95,9 +93,38 @@ double* ts_gen_sim(TSeries* ots, TSeries* its){
 }
 
 /* TODO: generate a lagged version of a time series and opt. save */
-void ts_gen_lag(){
+double* ts_gen_lag(TSeries* ots, TSeries* its, int lag){
   printf("inside ts_gen_lag\n");
-  return;
+  ots->nelem = its->nelem;
+  // ots->seed = its->seed;
+  ots->id = its->id;
+  strcpy(ots->name, its->name);
+  double* elems = (double*)malloc((ots->nelem)*sizeof(double));
+
+  // pad the initial elements
+  for(int i=0; i<lag; i++){
+    elems[i] = 0;
+  }
+  for(int i=lag; i<ots->nelem; i++){
+    elems[i] = its->ts[i-lag];
+  }
+  ots->ts = elems;
+
+  // save to disk if required
+  // TODO: move this type of save blocks to own func.
+  char fname[LEN_FNAME];
+  strcpy(fname, "./db/");
+  strcat(fname, ots->name);
+  strcat(fname, "-lag");  
+  FILE* pf = fopen(fname, "w");
+  if(ots->save == true && pf != NULL){
+    for(int i=0; i<ots->nelem; i++){
+    	fprintf(pf, "%f\n", ots->ts[i]);
+    }
+    fclose(pf);
+  } 
+
+  return elems;
 }   
 
 /* TODO: transform time series given a transform func like dft and optionally compress */
