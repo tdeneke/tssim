@@ -9,6 +9,7 @@
 #include <gsl/gsl_fft_halfcomplex.h>
 #include <spatialindex/capi/sidx_api.h>
 #include <time.h>
+#include <math.h>
 
 /* TODO: generate n time series signals and optionally save */
 double* ts_gen(TSeries* ts){
@@ -202,9 +203,55 @@ void ts_search(IndexH idx, TSeries* tssim){
 }
   
 /* TODO: time series lag corr. calc. */
-void ts_calc_lag(){
+int ts_calc_lag(TSeries* ts1, TSeries* ts2){
   printf("inside ts_calc_lag \n");
-  return;
+
+  double corr = 0, maxcorr=0; 
+  int lag = 0;
+  double sum_tslag, sum_ts2, sum_tslagts2;
+  double squareSum_tslag, squareSum_ts2;
+  
+  for (int j = 0; j < ts1->nelem; j++){
+    TSeries* tslag = (TSeries*)malloc(sizeof(TSeries));
+    tslag->save = false;
+    ts_gen_lag(tslag, ts1, j);
+
+    sum_tslag = 0, sum_ts2 = 0, sum_tslagts2 = 0;
+    squareSum_tslag = 0, squareSum_ts2 = 0; 
+    for (int i = 0; i < ts1->nelem; i++){
+      // sum of elements of array tslag.
+      sum_tslag = sum_tslag + tslag->ts[i];
+ 
+      // sum of elements of array ts2.
+      sum_ts2 = sum_ts2 + ts2->ts[i];
+ 
+      // sum of tslag[i] * ts2[i].
+      sum_tslagts2 = sum_tslagts2 + tslag->ts[i] * ts2->ts[i];
+ 
+      // sum of square of array elements.
+      squareSum_tslag = squareSum_tslag + tslag->ts[i] * tslag->ts[i];
+      squareSum_ts2 = squareSum_ts2 + ts2->ts[i] * ts2->ts[i];
+    }
+ 
+    // use formula for calculating correlation coefficient.
+    corr = (ts1->nelem * sum_tslagts2 - sum_tslag * sum_ts2) 
+                / sqrt((ts1->nelem * squareSum_tslag - sum_tslag * sum_tslag) 
+                      * (ts1->nelem * squareSum_ts2 - sum_ts2 * sum_ts2));
+     
+    printf("lag is: %d and corr is: %f\n", lag, corr);
+    if(corr > maxcorr){
+      maxcorr = corr;
+      lag = j;
+    }
+    
+    free(tslag->ts);
+    // free(tslag->fs);
+    free(tslag);
+  }
+
+  printf("lag is: %d\n", lag);
+
+  return lag;
 }
 
 /* TODO: build lag graph ?? */

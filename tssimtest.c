@@ -51,7 +51,7 @@ int main() {
   ts_search(idx, tslag);
   
   /* TODO: time series lag corr. calc. */
-  // ts_calc_lag();
+  ts_calc_lag(tssim, tslag);
 
   /* TODO: build lag graph ?? */
   // ts_lag_graph();

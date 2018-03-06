@@ -70,7 +70,7 @@ IndexH ts_index(TSSimContext*);
 void ts_search(IndexH, TSeries*);
   
 /* TODO: time series lag corr. calc. */
-void ts_calc_lag();
+int ts_calc_lag(TSeries*, TSeries*);
 
 /* TODO: build lag graph ?? */
 void ts_lag_graph();
