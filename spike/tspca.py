@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 scale = lambda x: (x - x.mean()) / x.std()
 
 #generate n group of timeserieses
-def ts_gen(ng=3, nts=300, n=100):
+def ts_gen(ng=1, nts=20, n=100):
     """ function to generate ng clusters of nts timeseries with len n"""
     lts = np.empty((0, n))
     np.random.seed(167)
@@ -18,27 +18,34 @@ def ts_gen(ng=3, nts=300, n=100):
         # group of timeseries with slight variations
         for k in range(nts):
             # a similar timeseries based on template
-            tssim = ts + 0.5*np.random.uniform(-100, 100, n)
+            tssim = ts + 0.8*np.random.uniform(-100, 100, n)
             lts = np.append(lts, [tssim], axis=0)
     return lts
 #do a pca on a set of timeserieses
-def ts_pca(lts, npc=3):
+def ts_pca(lts, npc=1):
     pca = PCA(n_components=npc)
-    pca.fit(lts.transpose())
+    rcorr = np.corrcoef(lts.transpose(), rowvar=False)
+    #plt.imshow(rcorr, cmap='hot')
+    plt.imshow(rcorr, cmap='hot', interpolation='nearest')
+    plt.show()
+    pca.fit(rcorr)
     return pca
 #plot n pcs
-def ts_plot_pc(lts, pca, npc=3):
-    x = pca.transform(lts.transpose())
+def ts_plot_pc(lts, pca, npc=1):
+    x = -scale(pca.transform(scale(lts.transpose())))
     #print(x)
     for i in range(npc):
         plt.plot(x[:,i])
+    plt.show()
+    print(pca.components_[0])
+    plt.bar(range(len(pca.components_[0])), pca.components_[0])
     plt.show()
     return
 
 #do a pca on a set of timeserieses
 def ts_ica(lts, nic=3):
     ica = FastICA(n_components=nic)
-    ica.fit(lts.transpose())
+    ica.fit(np.cov(lts.transpose()))
     return ica
 #plot n pcs
 def ts_plot_ic(lts, ica, nic=3):
@@ -52,20 +59,18 @@ def ts_plot_ic(lts, ica, nic=3):
 if __name__ == "__main__":
     print("pca of timeseries data!\n")
     lts = ts_gen()
-    plt.plot(lts[0,:])
-    plt.plot(lts[300,:])
-    plt.plot(lts[600,:])
-    #scaler = StandardScaler()
-    #lts = scaler.fit_transform(lts)
-    #lts = scale(lts)
-    # lts /= lts.std(axis=0) #standardise
-    plt.plot(lts[10,:])
-    plt.plot(lts[310,:])
-    plt.plot(lts[610,:])
+    
+    for i in range(20):
+        plt.plot(lts[i,:])
+    plt.show()
+
+    slts = scale(lts)
+    for i in range(20):
+        plt.plot(slts[i,:])
     plt.show()
 
     pca = ts_pca(lts)
     ts_plot_pc(lts, pca)
 
-    ica = ts_ica(lts)
-    ts_plot_ic(lts, ica)
+    #ica = ts_ica(lts)
+    #ts_plot_ic(lts, ica)
