@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS=-I. -I/l/tewodrod/spike/tssim/spike/libspatialindex/include
-LDFLAGS=-lgsl -lgslcblas -lm  -L/l/tewodrod/spike/tssim/spike/libspatialindex/build/bin/ -lspatialindex_c
+CFLAGS=-I. -Ispatialindex/include
+LDFLAGS=-lgsl -lgslcblas -lm  -Lspatialindex/bin -lspatialindex_c
 DEPS = tssim.h
 OBJ = tssimtest.o tssim.o 
 
